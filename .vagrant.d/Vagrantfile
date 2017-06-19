@@ -1,0 +1,25 @@
+Vagrant.configure(2) do |config|
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 3072
+    v.cpus = 2
+  end
+
+  config.vm.network "public_network",
+    bridge: "enp7s0"
+
+  config.vm.provision "shell", 
+    run: "always",
+    inline: "ip route add 10.0.0.0/24 via 192.168.111.254 dev eth1"
+
+  config.vm.provision :"puppet" do |puppet|
+      puppet.module_path="modules"
+      puppet.options = "--verbose --debug"
+  end
+
+  if Vagrant.has_plugin?("vagrant-timezone")
+    config.timezone.value = "America/Recife"
+  end
+
+end
+
